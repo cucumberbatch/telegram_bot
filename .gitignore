@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Datasource local storage ignored files
+/.idea/
+/target/
+/tokens/
+/dataSources.local.xml
+
+# Ignore credentials
+/src/main/resources/
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+
+*.iml
