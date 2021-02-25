@@ -8,6 +8,6 @@ import java.util.List;
 public class Validator {
     public static boolean isContainsPhoneNumber(Message message) {
         List<MessageEntity> entities = message.getEntities();
-        return entities.size() > 2 && entities.get(1).getType().equals("phone_number");
+        return entities.size() > 1 && entities.get(1).getType().equals("phone_number");
     }
 }

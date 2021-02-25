@@ -1,7 +1,6 @@
 package backend.command;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static frontend.io.KeyboardButtonHelper.*;
@@ -20,19 +19,23 @@ public class UserMessage {
 
         if (GET_COMMAND.equals(entityText)) {
             GET.execute(update);
+            return;
         }
-
-        if (WELCOME_COMMAND.equals(entityText)) {
-            WELCOME.execute(update);
+        if (INSERT_COMMAND.equals(entityText)) {
+            INSERT.execute(update);
             return;
         }
         if (HELP_COMMAND.equals(entityText)) {
             HELP.execute(update);
             return;
         }
-        if (EXIT_COMMAND.equals(entityText)) {
-            EXIT.execute(update);
-            return;
-        }
+//        if (WELCOME_COMMAND.equals(entityText)) {
+//            WELCOME.execute(update);
+//            return;
+//        }
+//        if (EXIT_COMMAND.equals(entityText)) {
+//            EXIT.execute(update);
+//            return;
+//        }
     }
 }

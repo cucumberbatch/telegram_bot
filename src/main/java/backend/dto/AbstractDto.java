@@ -2,22 +2,22 @@ package backend.dto;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
-public class AbstractDto implements Dto {
+public class AbstractDto<T> implements Dto<T> {
     private final ReplyKeyboardMarkup keyboardMarkup;
-    private final String replyMessage;
+    private final T replyMessage;
 
-    AbstractDto(String replyMessage, ReplyKeyboardMarkup markup) {
+    AbstractDto(T replyMessage, ReplyKeyboardMarkup markup) {
         this.replyMessage = replyMessage;
         this.keyboardMarkup = markup;
     }
 
     @Override
-    public ReplyKeyboardMarkup getButtonCaptionList() {
+    public ReplyKeyboardMarkup getReplyKeyboardMarkup() {
         return keyboardMarkup;
     }
 
     @Override
-    public String getReplyMessage() {
+    public T getReplyMessage() {
         return replyMessage;
     }
 }

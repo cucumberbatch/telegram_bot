@@ -1,21 +1,22 @@
 package backend.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Subscriber {
-    private Long phoneNumber;
+    private String phoneNumber;
     private List<String> tags;
 
-    public Subscriber(Long phoneNumber, List<String> tags) {
+    public Subscriber(String phoneNumber, List<String> tags) {
         this.phoneNumber = phoneNumber;
         this.tags = tags;
     }
 
-    public Long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -33,5 +34,19 @@ public class Subscriber {
                 "phoneNumber=" + phoneNumber +
                 ", tags=" + tags.toString() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subscriber that = (Subscriber) o;
+        return Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(tags, that.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(phoneNumber, tags);
     }
 }
