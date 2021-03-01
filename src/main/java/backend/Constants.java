@@ -1,5 +1,6 @@
 package backend;
 
+import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
@@ -11,9 +12,12 @@ import java.util.logging.Logger;
 
 public class Constants {
 
+    public static final Long CHAT_SESSION_TIMEOUT = 1000L;
     public static Logger LOGGER;
+    public static DefaultConfigurationReplyKeyboardMarkupFactory keyboardFactory;
 
     static {
+        // logger initialization
         InputStream stream = Constants.class.getClassLoader().
                 getResourceAsStream("logging.properties");
         try {
@@ -23,6 +27,9 @@ public class Constants {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // default keyboard factory initialization
+        keyboardFactory = DefaultConfigurationReplyKeyboardMarkupFactory.getInstance();
     }
 
 

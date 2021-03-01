@@ -12,13 +12,15 @@ public class KeyboardButtonHelper {
     public static final String EXIT_COMMAND     = "/exit";
     public static final String WELCOME_COMMAND  = "/welcome";
     public static final String GET_COMMAND      = "/get";
-    public static final String INSERT_COMMAND   = "/insert";
+    public static final String ADD_COMMAND      = "/add";
+    public static final String CANCEL_COMMAND   = "/cancel";
 
     public static final KeyboardButton HELP_COMMAND_BUTTON      = new KeyboardButton(HELP_COMMAND);
     public static final KeyboardButton EXIT_COMMAND_BUTTON      = new KeyboardButton(EXIT_COMMAND);
     public static final KeyboardButton WELCOME_COMMAND_BUTTON   = new KeyboardButton(WELCOME_COMMAND);
     public static final KeyboardButton GET_COMMAND_BUTTON       = new KeyboardButton(GET_COMMAND);
-    public static final KeyboardButton INSERT_COMMAND_BUTTON    = new KeyboardButton(INSERT_COMMAND);
+    public static final KeyboardButton ADD_COMMAND_BUTTON       = new KeyboardButton(ADD_COMMAND);
+    public static final KeyboardButton CANCEL_COMMAND_BUTTON    = new KeyboardButton(CANCEL_COMMAND);
 
 
     public static List<KeyboardRow> collectKeyboardRows(List<List<KeyboardButton>> buttonLists) {

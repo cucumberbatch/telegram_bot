@@ -45,13 +45,30 @@ public class SubscriberDao implements Dao<Subscriber, Integer> {
     }
 
     public Optional<Subscriber> getAllTags() {
-        return null;
+        LOGGER.info("DAO getAllTags method invoked!");
+        String query = "select telegram_bot.tags.tag from telegram_bot.tags";
+        Optional<Subscriber> subscriber = Optional.of(new Subscriber(null, new ArrayList<>()));
+
+        try (Statement statement = connection.get().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String tag = resultSet.getString(1);
+                subscriber.get().getTags().add(tag);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, null, e);
+        }
+
+        LOGGER.log(Level.INFO, "Collected tags: {0}", subscriber.get().getTags());
+        return subscriber;
     }
 
     @Override
     public List<Subscriber> getAll() {
         LOGGER.info("DAO getAll method invoked!");
-        String query = "SELECT * FROM telegram_bot.subscribers";
+        String query = "select * from telegram_bot.subscribers";
         List<Subscriber> subscribers = new ArrayList<>();
 
         try (Statement statement = connection.get().createStatement()) {
