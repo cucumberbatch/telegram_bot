@@ -1,4 +1,4 @@
-package backend.dao;
+package backend.db.dao;
 
 import java.util.List;
 import java.util.Optional;

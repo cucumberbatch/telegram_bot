@@ -8,12 +8,12 @@ public class Subscriber {
     private List<String> tags;
 
     public Subscriber(String phoneNumber, List<String> tags) {
-        this.phoneNumber = phoneNumber;
-        this.tags = tags;
+        setPhoneNumber(phoneNumber);
+        setTags(tags);
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return this.phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -21,7 +21,7 @@ public class Subscriber {
     }
 
     public List<String> getTags() {
-        return tags;
+        return this.tags;
     }
 
     public void setTags(List<String> tags) {

@@ -1,5 +1,6 @@
 package backend.command;
 
+import backend.service.AnotherSubscriberService;
 import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
 import backend.service.KeyboardMarkupContainer;
 import frontend.io.KeyboardButtonHelper;
@@ -56,7 +57,7 @@ public class MainMenuStrategy implements IMenuStrategy {
                 "\nЧтобы получить информацию о номере телефона, необходимо ввести его в формате +7**********: " +
                 "\nЧтобы добавить информацию о номере телефона, необходимо отправить сообщение: " + KeyboardButtonHelper.ADD_COMMAND;
 
-        MessageCommand.sendMessageToChat(update.getMessage(), text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(update.getMessage(), text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
     }
 
     @Override
@@ -75,14 +76,14 @@ public class MainMenuStrategy implements IMenuStrategy {
         if (isContainsPhoneNumber(message) && isPhoneNumberValid(message.getText())) {
             session.setPhoneNumber(message.getText());
             String formattedNumber = formatPhoneNumber(message.getText());
-            tags = session.getDao().getByNumber(formattedNumber).get().getTags();
+            tags = AnotherSubscriberService.getPhoneNumberTags(formattedNumber);
         }
 
         String responseMessageText = (tags == null || tags.isEmpty())
                 ? tagsNotFoundText
                 : foundedTags + tags.toString();
 
-        MessageCommand.sendMessageToChat(message, responseMessageText, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, responseMessageText, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
     }
 
 

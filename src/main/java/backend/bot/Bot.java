@@ -15,7 +15,7 @@ import static backend.Constants.*;
 public class Bot extends TelegramLongPollingBot {
     private static Bot instance;
     private final Map<Long, ChatSession> sessionMap = new HashMap<>();
-    private Pool<ChatSession> sessionPool = new Pool<>(ChatSession::new);
+    private final Pool<ChatSession> sessionPool     = new Pool<>(ChatSession::new);
 
     public static Bot getInstance() {
         return instance == null ? new Bot() : instance;
@@ -27,9 +27,9 @@ public class Bot extends TelegramLongPollingBot {
 
         // checks all sessions. if they timers are up then
         // we need to reserve them
-        // FIXME: fix session pooling
+        // TODO: needs to check for correctness with multiple sessions
         for (Long id : sessionMap.keySet()) {
-            if (isSessionTimedOut(id)) {
+            if (isSessionTimedOut(sessionMap.get(id)) && !isTheSameChatId(update, id)) {
                 LOGGER.info(String.format("Session [%1$s] is time out!", chatId));
                 sessionPool.put(sessionMap.remove(id));
             }
@@ -37,6 +37,7 @@ public class Bot extends TelegramLongPollingBot {
 
         // instantiate a new session for new chat id
         if (!sessionMap.containsKey(chatId)) {
+            LOGGER.info(String.format("Created a new chat session [%1$s]", chatId));
             sessionMap.put(chatId, sessionPool.get());
         }
 
@@ -44,8 +45,13 @@ public class Bot extends TelegramLongPollingBot {
         sessionMap.get(chatId).handle(update);
     }
 
-    private boolean isSessionTimedOut(Long id) {
-        return (Instant.now().getEpochSecond() - sessionMap.get(id).getPreviousBotMessage().getDate()) > Constants.CHAT_SESSION_TIMEOUT;
+    private boolean isTheSameChatId(Update update, Long id) {
+        return id.equals(update.getMessage().getChatId());
+    }
+
+    private boolean isSessionTimedOut(ChatSession session) {
+        if (session.getPreviousBotMessage() == null) return false;
+        return (Instant.now().getEpochSecond() - session.getPreviousBotMessage().getDate()) > Constants.CHAT_SESSION_TIMEOUT;
     }
 
 

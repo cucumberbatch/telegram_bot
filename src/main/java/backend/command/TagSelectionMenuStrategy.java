@@ -1,11 +1,9 @@
 package backend.command;
 
-import backend.model.Subscriber;
+import backend.service.AnotherSubscriberService;
 import backend.service.KeyboardMarkupContainer;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Arrays;
 
 import static backend.Constants.LOGGER;
 import static backend.command.ChatSession.getUserInfo;
@@ -35,7 +33,7 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
         String text = "Вы в главном меню";
 
         // returning to the main menu state
-        MessageCommand.sendMessageToChat(update.getMessage(), text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(update.getMessage(), text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
         session.setMenuStrategy(new MainMenuStrategy(session));
     }
 
@@ -50,14 +48,14 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
         Message message             = update.getMessage();
         String formattedTag         = formatTag(message.getText());
         String formattedPhoneNumber = formatPhoneNumber(session.getPhoneNumber());
-        Subscriber subscriber       = new Subscriber(formattedPhoneNumber, Arrays.asList(formattedTag));
-        boolean isInsertionSuccess  = session.getDao().insert(subscriber).isPresent();
+        AnotherSubscriberService.addSubscriberTag(formattedPhoneNumber, formattedTag);
 
-        LOGGER.info(String.format("Inserted new tag [%1$s] for '%2$s'", formattedTag, subscriber.getPhoneNumber()));
+        LOGGER.info(String.format("Inserted new tag [%1$s] for '%2$s'", formattedTag, formattedPhoneNumber));
 
-        String responseMessageText = isInsertionSuccess ? tagInsertionSuccessText : tagInsertionFailureText;
+//        String responseMessageText = isInsertionSuccess ? tagInsertionSuccessText : tagInsertionFailureText;
+        String responseMessageText = tagInsertionSuccessText;
 
-        MessageCommand.sendMessageToChat(message, responseMessageText, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, responseMessageText, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
         session.setMenuStrategy(new MainMenuStrategy(session));
     }
 

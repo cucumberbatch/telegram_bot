@@ -1,5 +1,6 @@
 package backend.command;
 
+import backend.service.AnotherSubscriberService;
 import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
 import backend.service.KeyboardMarkupContainer;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -32,16 +33,18 @@ public class AddingContactInformationMenuStrategy implements IMenuStrategy {
         Message message = update.getMessage();
         String text =
                 "Для добавления тегов или ярлыков контакту " +
-                "отправьте номер телефона этого контакта";
+                        "отправьте номер телефона этого контакта";
 
-        ReplyKeyboardMarkup keyboardMarkup =
-                DefaultConfigurationReplyKeyboardMarkupFactory
+        ReplyKeyboardMarkup keyboardMarkup = DefaultConfigurationReplyKeyboardMarkupFactory
                         .getInstance()
                         .newKeyboardInstance()
                         .setKeyboard(new ArrayList<>(
                                 KeyboardMarkupContainer.GET_OR_ADD_MENU_REPLY_KEYBOARD_MARKUP.getKeyboard()));
 
-//        session.getPreviousBotMessage().
+        // add hot key button with last entered phone number
+        if (session.getPhoneNumber() != null) {
+            KeyboardMarkupContainer.insertInKeyboardMarkupFromTop(keyboardMarkup, Arrays.asList(session.getPhoneNumber()));
+        }
 
         session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, text, KeyboardMarkupContainer.GET_OR_ADD_MENU_REPLY_KEYBOARD_MARKUP));
     }
@@ -54,7 +57,7 @@ public class AddingContactInformationMenuStrategy implements IMenuStrategy {
         String text = "Вы в главном меню";
 
         // returning to the main menu state
-        MessageCommand.sendMessageToChat(message, text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
         session.setMenuStrategy(new MainMenuStrategy(session));
     }
 
@@ -64,10 +67,10 @@ public class AddingContactInformationMenuStrategy implements IMenuStrategy {
 
         Message message = update.getMessage();
         ReplyKeyboardMarkup keyboardMarkup = KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP;
-        String  text    = "Выберите тег из клавиатуры или введите новый";
+        String text = "Выберите тег из клавиатуры или введите новый";
 
         if (isContainsPhoneNumber(message) && isPhoneNumberValid(message.getText())) {
-            List<String> tags = session.getDao().getAllTags().get().getTags();
+            List<String> tags = AnotherSubscriberService.getAllTags();
             keyboardMarkup = KeyboardMarkupContainer.insertInKeyboardMarkupFromTop(
                     DefaultConfigurationReplyKeyboardMarkupFactory
                             .getInstance()
@@ -78,7 +81,7 @@ public class AddingContactInformationMenuStrategy implements IMenuStrategy {
 
             session.setPhoneNumber(message.getText());
         }
-        MessageCommand.sendMessageToChat(message, text, keyboardMarkup);
+        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, text, keyboardMarkup));
         session.setMenuStrategy(new TagSelectionMenuStrategy(session));
     }
 

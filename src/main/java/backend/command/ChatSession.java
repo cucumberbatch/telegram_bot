@@ -1,6 +1,5 @@
 package backend.command;
 
-import backend.dao.SubscriberDao;
 import backend.service.Validator;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -10,7 +9,6 @@ import static frontend.io.KeyboardButtonHelper.*;
 public class ChatSession {
 
     private IMenuStrategy strategy = new MainMenuStrategy(this);
-    private SubscriberDao dao      = new SubscriberDao();
     private String lastEnteredPhoneNumber;
     private Message previousBotMessage;
 
@@ -49,10 +47,6 @@ public class ChatSession {
 
     public static String getUserInfo(Update update) {
         return update.getMessage().getChat().getUserName();
-    }
-
-    public SubscriberDao getDao() {
-        return this.dao;
     }
 
     public void setPhoneNumber(String phoneNumber) {
