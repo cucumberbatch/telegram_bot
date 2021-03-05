@@ -1,7 +1,7 @@
 package backend.db.dao;
 
 import backend.db.JdbcConnection;
-import backend.dto.SubscriberNumberDto;
+import backend.dto.SubscriberPhoneNumberDto;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,26 +10,26 @@ import java.util.Optional;
 
 import static backend.Constants.LOGGER;
 
-public class SubscriberNumbersDao implements Dao<SubscriberNumberDto, Integer> {
+public class SubscriberPhoneNumbersDao implements Dao<SubscriberPhoneNumberDto, Integer> {
     private final Optional<Connection> connection;
 
-    public SubscriberNumbersDao() {
-        this.connection = JdbcConnection.getConnection();
+    public SubscriberPhoneNumbersDao(JdbcConnection connection) {
+        this.connection = connection.getConnection();
     }
 
     @Override
-    public Optional<Integer> insert(SubscriberNumberDto subscriberNumberDto) {
+    public Optional<Integer> insert(SubscriberPhoneNumberDto subscriberPhoneNumberDto) {
         String query = "insert into telegram_bot.subscribers (phone_number) values (?)";
         Optional<Integer> id = Optional.empty();
 
         try (PreparedStatement statement = connection.get().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, subscriberNumberDto.getPhoneNumber());
+            statement.setString(1, subscriberPhoneNumberDto.getPhoneNumber());
             int numberOfInsertedRows = statement.executeUpdate();
             if (numberOfInsertedRows > 0) {
                 ResultSet resultSet = statement.getGeneratedKeys();
                 if (resultSet.next()) {
                     id = Optional.of(resultSet.getInt(1));
-                    LOGGER.info(String.format("Inserted a phone number [%1$s] with id [%2$s]!", subscriberNumberDto.getPhoneNumber(), id.get()));
+                    LOGGER.info(String.format("Inserted a phone number [%1$s] with id [%2$s]!", subscriberPhoneNumberDto.getPhoneNumber(), id.get()));
                 }
             }
         } catch (SQLException e) {
@@ -39,25 +39,25 @@ public class SubscriberNumbersDao implements Dao<SubscriberNumberDto, Integer> {
     }
 
     @Override
-    public void update(SubscriberNumberDto subscriberNumberDto) {
+    public void update(SubscriberPhoneNumberDto subscriberPhoneNumberDto) {
     }
 
     @Override
-    public void delete(SubscriberNumberDto subscriberNumberDto) {
+    public void delete(SubscriberPhoneNumberDto subscriberPhoneNumberDto) {
     }
 
     @Override
-    public Optional<SubscriberNumberDto> get(Integer id) {
+    public Optional<SubscriberPhoneNumberDto> get(Integer id) {
         String query = "select telegram_bot.subscribers.phone_number from telegram_bot.subscribers where telegram_bot.subscribers.id = (?)";
-        Optional<SubscriberNumberDto> dto = Optional.empty();
+        Optional<SubscriberPhoneNumberDto> dto = Optional.empty();
 
         try (PreparedStatement statement = connection.get().prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                dto = Optional.of(new SubscriberNumberDto(resultSet.getString(1)));
+                dto = Optional.of(new SubscriberPhoneNumberDto(resultSet.getString(1)));
+                LOGGER.info(String.format("Phone number search result [%1$s] by id [%2$s]", dto.get(), id));
             }
-            LOGGER.info(String.format("Phone number search result [%1$s] by id [%2$s]", dto.get(), id));
         } catch (SQLException e) {
             LOGGER.info(e.getSQLState());
         }
@@ -65,16 +65,16 @@ public class SubscriberNumbersDao implements Dao<SubscriberNumberDto, Integer> {
     }
 
     @Override
-    public List<SubscriberNumberDto> getAll() {
+    public List<SubscriberPhoneNumberDto> getAll() {
         String query = "select telegram_bot.subscribers.phone_number from telegram_bot.subscribers";
-        List<SubscriberNumberDto> dtos = new ArrayList<>();
+        List<SubscriberPhoneNumberDto> dtos = new ArrayList<>();
 
         try (PreparedStatement statement = connection.get().prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 String phoneNumber = resultSet.getString(1);
-                dtos.add(new SubscriberNumberDto(phoneNumber));
+                dtos.add(new SubscriberPhoneNumberDto(phoneNumber));
             }
             LOGGER.info(String.format("Founded numbers in database: [%1$s]", dtos));
         } catch (SQLException e) {

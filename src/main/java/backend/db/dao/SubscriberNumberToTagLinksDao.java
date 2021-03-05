@@ -13,8 +13,8 @@ import static backend.Constants.LOGGER;
 public class SubscriberNumberToTagLinksDao implements Dao<SubscriberNumberToTagLinkDto, Integer> {
     private final Optional<Connection> connection;
 
-    public SubscriberNumberToTagLinksDao() {
-        this.connection = JdbcConnection.getConnection();
+    public SubscriberNumberToTagLinksDao(JdbcConnection connection) {
+        this.connection = connection.getConnection();
     }
 
     @Override
@@ -23,14 +23,14 @@ public class SubscriberNumberToTagLinksDao implements Dao<SubscriberNumberToTagL
         Optional<Integer> id = Optional.empty();
 
         try (PreparedStatement statement = connection.get().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setInt(1, subscriberNumberToTagLinkDto.getSubscriberId());
+            statement.setInt(1, subscriberNumberToTagLinkDto.getPhoneNumberId());
             statement.setInt(2, subscriberNumberToTagLinkDto.getTagId());
             int numberOfInsertedRows = statement.executeUpdate();
             if (numberOfInsertedRows > 0) {
                 ResultSet resultSet = statement.getGeneratedKeys();
                 if (resultSet.next()) {
                     id = Optional.of(resultSet.getInt(1));
-                    LOGGER.info(String.format("Inserted a link with subscriber id [%1$s] and tag id [%2$s]!", subscriberNumberToTagLinkDto.getSubscriberId(), subscriberNumberToTagLinkDto.getTagId()));
+                    LOGGER.info(String.format("Inserted a link with subscriber id [%1$s] and tag id [%2$s]!", subscriberNumberToTagLinkDto.getPhoneNumberId(), subscriberNumberToTagLinkDto.getTagId()));
                 }
             }
         } catch (SQLException e) {
@@ -59,8 +59,8 @@ public class SubscriberNumberToTagLinksDao implements Dao<SubscriberNumberToTagL
                 Integer subscriberId = resultSet.getInt(1);
                 Integer tagId        = resultSet.getInt(2);
                 dto = Optional.of(new SubscriberNumberToTagLinkDto(subscriberId, tagId));
+                LOGGER.info(String.format("Link search result [%1$s] by id [%2$s]", dto.get(), id));
             }
-            LOGGER.info(String.format("Link search result [%1$s] by id [%2$s]", dto.get(), id));
         } catch (SQLException e) {
             LOGGER.info(e.getSQLState());
         }

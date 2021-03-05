@@ -4,15 +4,17 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validator {
+public class UserMessageValidator {
+
     public static boolean isContainsPhoneNumber(Message message) {
-        List<MessageEntity> entities = message.getEntities();
-        return entities.get(0).getType().equals("phone_number");
+        return Objects.nonNull(message.getEntities()) && message.getEntities().get(0).getType().equals("phone_number");
     }
 
+    // TODO: change validation logic and/or make error message for specific phone numbers
     public static boolean isPhoneNumberValid(String phoneNumber) {
         String regex = "\\+7\\d+";
         Pattern pattern = Pattern.compile(regex);

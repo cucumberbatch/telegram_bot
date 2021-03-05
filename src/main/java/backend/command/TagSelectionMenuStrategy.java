@@ -1,13 +1,13 @@
 package backend.command;
 
-import backend.service.AnotherSubscriberService;
+import backend.service.SubscriberService;
 import backend.service.KeyboardMarkupContainer;
+import backend.service.UserMessageFormatter;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static backend.Constants.LOGGER;
 import static backend.command.ChatSession.getUserInfo;
-import static backend.command.MainMenuStrategy.formatPhoneNumber;
 
 public class TagSelectionMenuStrategy implements IMenuStrategy {
 
@@ -26,6 +26,7 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
 
     }
 
+    // TODO: take out the logic into separate objects in each method
     @Override
     public void cancel(Update update) {
         LOGGER.info(String.format("Cancel message command is invoked by %1$s.\tTransition: tag selection -> main menu", getUserInfo(update)));
@@ -37,6 +38,7 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
         session.setMenuStrategy(new MainMenuStrategy(session));
     }
 
+    // TODO: take out the logic into separate objects in each method
     @Override
     public void handle(Update update) {
         LOGGER.info(String.format("Specific message handler is invoked by %1$s with parameter %2$s.\tTransition: tag selection -> main menu", getUserInfo(update), update.getMessage().getText()));
@@ -46,9 +48,9 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
 
         // handle the message with entered tag
         Message message             = update.getMessage();
-        String formattedTag         = formatTag(message.getText());
-        String formattedPhoneNumber = formatPhoneNumber(session.getPhoneNumber());
-        AnotherSubscriberService.addSubscriberTag(formattedPhoneNumber, formattedTag);
+        String formattedTag         = UserMessageFormatter.formatTag(message.getText());
+        String formattedPhoneNumber = UserMessageFormatter.formatPhoneNumber(session.getPhoneNumber());
+        SubscriberService.addSubscriberTag(formattedPhoneNumber, formattedTag);
 
         LOGGER.info(String.format("Inserted new tag [%1$s] for '%2$s'", formattedTag, formattedPhoneNumber));
 
@@ -59,12 +61,4 @@ public class TagSelectionMenuStrategy implements IMenuStrategy {
         session.setMenuStrategy(new MainMenuStrategy(session));
     }
 
-    public static String formatTag(String text) {
-//        String regex = "([\\p{L}|\\d]+)\\s*$";
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(text);
-//        matcher.find();
-//        return matcher.group(1);
-        return text;
-    }
 }

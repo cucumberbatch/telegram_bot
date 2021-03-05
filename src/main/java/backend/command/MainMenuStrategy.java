@@ -1,8 +1,9 @@
 package backend.command;
 
-import backend.service.AnotherSubscriberService;
+import backend.service.SubscriberService;
 import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
 import backend.service.KeyboardMarkupContainer;
+import backend.service.UserMessageFormatter;
 import frontend.io.KeyboardButtonHelper;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,8 +15,8 @@ import java.util.List;
 
 import static backend.Constants.LOGGER;
 import static backend.command.ChatSession.getUserInfo;
-import static backend.service.Validator.isContainsPhoneNumber;
-import static backend.service.Validator.isPhoneNumberValid;
+import static backend.service.UserMessageValidator.isContainsPhoneNumber;
+import static backend.service.UserMessageValidator.isPhoneNumberValid;
 
 public class MainMenuStrategy implements IMenuStrategy {
 
@@ -26,6 +27,7 @@ public class MainMenuStrategy implements IMenuStrategy {
         this.session = session;
     }
 
+    // TODO: take out the logic into separate objects in each method
     @Override
     public void add(Update update) {
         LOGGER.info(String.format("Add message command is invoked by %1$s.\tTransition: main menu -> info adding", getUserInfo(update)));
@@ -47,6 +49,7 @@ public class MainMenuStrategy implements IMenuStrategy {
         session.setMenuStrategy(new AddingContactInformationMenuStrategy(session));
     }
 
+    // TODO: take out the logic into separate objects in each method
     @Override
     public void help(Update update) {
         LOGGER.info(String.format("Help message command is invoked by %1$s", getUserInfo(update)));
@@ -63,6 +66,7 @@ public class MainMenuStrategy implements IMenuStrategy {
     @Override
     public void cancel(Update update) { /* no implementation */ }
 
+    // TODO: take out the logic into separate objects in each method
     @Override
     public void handle(Update update) {
         LOGGER.info(String.format("Specific message handler is invoked by %1$s with parameter %2$s", getUserInfo(update), update.getMessage().getText()));
@@ -75,8 +79,8 @@ public class MainMenuStrategy implements IMenuStrategy {
 
         if (isContainsPhoneNumber(message) && isPhoneNumberValid(message.getText())) {
             session.setPhoneNumber(message.getText());
-            String formattedNumber = formatPhoneNumber(message.getText());
-            tags = AnotherSubscriberService.getPhoneNumberTags(formattedNumber);
+            String formattedNumber = UserMessageFormatter.formatPhoneNumber(message.getText());
+            tags = SubscriberService.getPhoneNumberTags(formattedNumber);
         }
 
         String responseMessageText = (tags == null || tags.isEmpty())
@@ -87,13 +91,4 @@ public class MainMenuStrategy implements IMenuStrategy {
     }
 
 
-    public static String formatPhoneNumber(String phoneNumber) {
-        return String.format(
-                MessageCommand.PHONE_NUMBER_FORMAT,
-                phoneNumber.substring(0, 2),
-                phoneNumber.substring(2, 5),
-                phoneNumber.substring(5, 8),
-                phoneNumber.substring(8, 10),
-                phoneNumber.substring(10, 12));
-    }
 }

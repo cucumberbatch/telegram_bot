@@ -2,7 +2,9 @@ package backend.bot;
 
 import backend.Constants;
 import backend.command.ChatSession;
+import backend.db.JdbcConnection;
 import backend.service.Pool;
+import backend.service.SubscriberService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -16,6 +18,10 @@ public class Bot extends TelegramLongPollingBot {
     private static Bot instance;
     private final Map<Long, ChatSession> sessionMap = new HashMap<>();
     private final Pool<ChatSession> sessionPool     = new Pool<>(ChatSession::new);
+
+    static {
+        SubscriberService.setConnection(new JdbcConnection(DB_URL, DB_USER, DB_PASSWORD));
+    }
 
     public static Bot getInstance() {
         return instance == null ? new Bot() : instance;
@@ -50,8 +56,9 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private boolean isSessionTimedOut(ChatSession session) {
-        if (session.getPreviousBotMessage() == null) return false;
-        return (Instant.now().getEpochSecond() - session.getPreviousBotMessage().getDate()) > Constants.CHAT_SESSION_TIMEOUT;
+        return
+                session.getPreviousBotMessage() != null &&
+                (Instant.now().getEpochSecond() - session.getPreviousBotMessage().getDate()) > Constants.CHAT_SESSION_TIMEOUT;
     }
 
 

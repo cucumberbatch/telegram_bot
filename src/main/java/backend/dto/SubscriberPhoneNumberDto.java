@@ -1,9 +1,9 @@
 package backend.dto;
 
-public class SubscriberNumberDto {
+public class SubscriberPhoneNumberDto {
     private String phoneNumber;
 
-    public SubscriberNumberDto(String phoneNumber) {
+    public SubscriberPhoneNumberDto(String phoneNumber) {
         setPhoneNumber(phoneNumber);
     }
 

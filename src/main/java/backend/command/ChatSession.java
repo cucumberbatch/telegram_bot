@@ -1,6 +1,6 @@
 package backend.command;
 
-import backend.service.Validator;
+import backend.service.UserMessageValidator;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -17,7 +17,7 @@ public class ChatSession {
         Message message    = update.getMessage();
         String messageText = message.getText();
 
-        if (Validator.isCommand(message) && !Validator.isContainsPhoneNumber(message)) {
+        if (UserMessageValidator.isCommand(message) && !UserMessageValidator.isContainsPhoneNumber(message)) {
 
             if (ADD_COMMAND.equals(messageText)) {
                 strategy.add(update);

@@ -29,12 +29,11 @@ public class Constants {
     public static String APPLICATION_NAME = "Quickstart";
 
     public static final String BOT_USERNAME = "PhoneNumberTaggerBot";
-    public static final String BOT_TOKEN    = "token";
 
 
     // PostgreSQL authentication data
-    public static final String DB_URL = "jdbc:postgresql://localhost/";
-    public static final String DB_USER = "postgres";
+    public static final String DB_URL      = "jdbc:postgresql://localhost/";
+    public static final String DB_USER     = "postgres";
     public static final String DB_PASSWORD = "admin";
 
 }

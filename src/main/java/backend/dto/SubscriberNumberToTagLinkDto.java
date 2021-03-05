@@ -10,7 +10,7 @@ public class SubscriberNumberToTagLinkDto {
     }
 
 
-    public Integer getSubscriberId() {
+    public Integer getPhoneNumberId() {
         return this.subscriberId;
     }
 

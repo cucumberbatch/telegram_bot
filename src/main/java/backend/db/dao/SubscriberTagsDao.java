@@ -13,8 +13,8 @@ import static backend.Constants.LOGGER;
 public class SubscriberTagsDao implements Dao<SubscriberTagDto, Integer> {
     private final Optional<Connection> connection;
 
-    public SubscriberTagsDao() {
-        this.connection = JdbcConnection.getConnection();
+    public SubscriberTagsDao(JdbcConnection connection) {
+        this.connection = connection.getConnection();
     }
 
     @Override
@@ -56,8 +56,8 @@ public class SubscriberTagsDao implements Dao<SubscriberTagDto, Integer> {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 dto = Optional.of(new SubscriberTagDto(resultSet.getString(1)));
+                LOGGER.info(String.format("Tag search result [%1$s] by id [%2$s]", dto.get(), id));
             }
-            LOGGER.info(String.format("Tag search result [%1$s] by id [%2$s]", dto.get(), id));
         } catch (SQLException e) {
             LOGGER.info(e.getSQLState());
         }
