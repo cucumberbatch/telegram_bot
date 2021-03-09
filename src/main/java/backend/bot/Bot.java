@@ -3,7 +3,7 @@ package backend.bot;
 import backend.Constants;
 import backend.command.ChatSession;
 import backend.db.JdbcConnection;
-import backend.service.Pool;
+import backend.memory.Pool;
 import backend.service.SubscriberService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;

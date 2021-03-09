@@ -1,4 +1,4 @@
-package backend.service;
+package backend.service.request;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.MessageEntity;

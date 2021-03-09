@@ -1,4 +1,4 @@
-package backend.service;
+package backend.memory;
 
 import java.util.ArrayList;
 import java.util.List;

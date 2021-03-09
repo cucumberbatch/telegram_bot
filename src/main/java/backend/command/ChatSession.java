@@ -1,10 +1,10 @@
 package backend.command;
 
-import backend.service.UserMessageValidator;
+import backend.service.request.UserMessageValidator;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import static frontend.io.KeyboardButtonHelper.*;
+import static backend.service.response.KeyboardButtonHelper.*;
 
 public class ChatSession {
 

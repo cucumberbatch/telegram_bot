@@ -1,90 +1,40 @@
 package backend.command;
 
-import backend.service.SubscriberService;
-import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
-import backend.service.KeyboardMarkupContainer;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import backend.command.handler.AddingContactInformationMenuContextHandler;
+import backend.command.handler.MenuStrategyHandler;
+import backend.command.handler.GeneralMenuCancelHandler;
+import backend.command.handler.TagSelectionMenuHelpHandler;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-
-import java.util.*;
-
-import static backend.Constants.LOGGER;
-import static backend.command.ChatSession.getUserInfo;
-import static backend.service.UserMessageValidator.isContainsPhoneNumber;
-import static backend.service.UserMessageValidator.isPhoneNumberValid;
 
 public class AddingContactInformationMenuStrategy implements IMenuStrategy {
 
-    private ChatSession session;
-
+    private final MenuStrategyHandler cancelHandler;
+    private final MenuStrategyHandler helpHandler;
+    private final MenuStrategyHandler contextHandler;
 
     public AddingContactInformationMenuStrategy(ChatSession session) {
-        this.session = session;
+        cancelHandler  = new GeneralMenuCancelHandler(session);
+        helpHandler    = new TagSelectionMenuHelpHandler(session);
+        contextHandler = new AddingContactInformationMenuContextHandler(session);
     }
 
     @Override
-    public void add(Update update) { /* no implementation */ }
+    public void add(Update update) {
+        /* no implementation */
+    }
 
-    // TODO: take out the logic into separate objects in each method
     @Override
     public void help(Update update) {
-        LOGGER.info(String.format("Help message command is invoked by %1$s", getUserInfo(update)));
-
-        Message message = update.getMessage();
-        String addingContactInformationHelpMessageText =
-                "Для добавления тегов или ярлыков контакту " +
-                        "отправьте номер телефона этого контакта";
-
-        ReplyKeyboardMarkup keyboardMarkup = DefaultConfigurationReplyKeyboardMarkupFactory
-                        .getInstance()
-                        .newKeyboardInstance()
-                        .setKeyboard(new ArrayList<>(
-                                KeyboardMarkupContainer.GET_OR_ADD_MENU_REPLY_KEYBOARD_MARKUP.getKeyboard()));
-
-        // add hot key button with last entered phone number
-        if (session.getPhoneNumber() != null) {
-            KeyboardMarkupContainer.insertInKeyboardMarkupFromTop(keyboardMarkup, Arrays.asList(session.getPhoneNumber()));
-        }
-
-        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, addingContactInformationHelpMessageText, KeyboardMarkupContainer.GET_OR_ADD_MENU_REPLY_KEYBOARD_MARKUP));
+        helpHandler.handle(update);
     }
 
-    // TODO: take out the logic into separate objects in each method
     @Override
     public void cancel(Update update) {
-        LOGGER.info(String.format("Cancel message command is invoked by %1$s.\tTransition: info adding -> main menu", getUserInfo(update)));
-
-        Message message = update.getMessage();
-        String text = "Вы в главном меню";
-
-        // returning to the main menu state
-        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, text, KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP));
-        session.setMenuStrategy(new MainMenuStrategy(session));
+        cancelHandler.handle(update);
     }
 
-    // TODO: take out the logic into separate objects in each method
     @Override
     public void handle(Update update) {
-        LOGGER.info(String.format("Specific message handler is invoked by %1$s with parameter %2$s. Transition: info adding -> tag selection", getUserInfo(update), update.getMessage().getText()));
-
-        Message message = update.getMessage();
-        ReplyKeyboardMarkup keyboardMarkup = KeyboardMarkupContainer.MAIN_MENU_REPLY_KEYBOARD_MARKUP;
-        String text = "Выберите тег из клавиатуры или введите новый";
-
-        if (isContainsPhoneNumber(message) && isPhoneNumberValid(message.getText())) {
-            List<String> tags = SubscriberService.getAllTags();
-            keyboardMarkup = KeyboardMarkupContainer.insertInKeyboardMarkupFromTop(
-                    DefaultConfigurationReplyKeyboardMarkupFactory
-                            .getInstance()
-                            .newKeyboardInstance()
-                            .setKeyboard(new ArrayList<>(
-                                    KeyboardMarkupContainer.GET_OR_ADD_MENU_REPLY_KEYBOARD_MARKUP.getKeyboard())),
-                    tags);
-
-            session.setPhoneNumber(message.getText());
-        }
-        session.setPreviousBotMessage(MessageCommand.sendMessageToChat(message, text, keyboardMarkup));
-        session.setMenuStrategy(new TagSelectionMenuStrategy(session));
+        contextHandler.handle(update);
     }
 }

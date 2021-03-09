@@ -1,6 +1,6 @@
 package backend;
 
-import backend.service.DefaultConfigurationReplyKeyboardMarkupFactory;
+import backend.service.response.DefaultConfigurationReplyKeyboardMarkupFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

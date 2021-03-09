@@ -90,7 +90,7 @@ public class SubscriberService {
      * by his phone number.
      *
      * @param phoneNumber
-     *        a subscriber phone number as string
+     *        a subscriber phone number as a string
      * @return a list of string that describes tags of that subscriber
      */
     public static List<String> getPhoneNumberTags(String phoneNumber) {

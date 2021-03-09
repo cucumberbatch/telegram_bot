@@ -1,4 +1,4 @@
-package backend.service;
+package backend.service.request;
 
 import backend.command.MessageCommand;
 
